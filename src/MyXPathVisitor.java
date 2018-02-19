@@ -106,12 +106,13 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 	
 	@Override public List<Node> visitRp_ddot(XPathParser.Rp_ddotContext ctx) {
 		Set<Node> set = new HashSet<>();
-		for(int i=0;i<scannedNodes.size();i++) {
-			set.add(scannedNodes.get(i).getParentNode());
-		}
 		List<Node> res = new ArrayList<>();
-		for(Node n:set)
-			res.add(n);
+		for(int i=0;i<scannedNodes.size();i++) {
+			if(!set.contains(scannedNodes.get(i).getParentNode())) {
+				set.add(scannedNodes.get(i).getParentNode());
+				res.add(scannedNodes.get(i).getParentNode());
+			}
+		}
 		scannedNodes = res;
 		return res;
 	}
@@ -198,6 +199,7 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 	@Override public List<Node> visitFilter_eq(XPathParser.Filter_eqContext ctx) {
 		Set<Node> res = new HashSet<>();
 		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
 		for(Node n:copy) {
 			int flag = 0;
 			scannedNodes = new ArrayList<>();
@@ -209,7 +211,10 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 			for(int i=0;i<res1.size();i++) {
 				for(int j=0;j<res2.size();j++) {
 					if(res1.get(i).isEqualNode(res2.get(j))) {
-						res.add(n);
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
 						flag = 1;
 						break;
 					}
@@ -218,13 +223,14 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 					break;
 			}
 		}
-		scannedNodes = new ArrayList<>(res);
-		return scannedNodes;
+		scannedNodes = new ArrayList<>(result);
+		return result;
 	}
 	
 	@Override public List<Node> visitFilter_is(XPathParser.Filter_isContext ctx) {
 		Set<Node> res = new HashSet<>();
 		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
 		for(Node n:copy) {
 			int flag = 0;
 			scannedNodes = new ArrayList<>();
@@ -236,7 +242,10 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 			for(int i=0;i<res1.size();i++) {
 				for(int j=0;j<res2.size();j++) {
 					if(res1.get(i).isSameNode(res2.get(j))) {
-						res.add(n);
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
 						flag = 1;
 						break;
 					}
@@ -245,8 +254,8 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 					break;
 			}
 		}
-		scannedNodes = new ArrayList<>(res);
-		return scannedNodes;
+		scannedNodes = new ArrayList<>(result);
+		return result;
 	}
 	
 	@Override public List<Node> visitFilter_paren(XPathParser.Filter_parenContext ctx) {
@@ -256,6 +265,7 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 	@Override public List<Node> visitFilter_ceq(XPathParser.Filter_ceqContext ctx) {
 		Set<Node> res = new HashSet<>();
 		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
 		for(Node n:copy) {
 			int flag = 0;
 			scannedNodes = new ArrayList<>();
@@ -267,7 +277,10 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 			for(int i=0;i<res1.size();i++) {
 				for(int j=0;j<res2.size();j++) {
 					if(res1.get(i).isEqualNode(res2.get(j))) {
-						res.add(n);
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
 						flag = 1;
 						break;
 					}
@@ -276,13 +289,14 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 					break;
 			}
 		}
-		scannedNodes = new ArrayList<>(res);
-		return scannedNodes;
+		scannedNodes = new ArrayList<>(result);
+		return result;
 	}
 	
 	@Override public List<Node> visitFilter_deq(XPathParser.Filter_deqContext ctx) {
 		Set<Node> res = new HashSet<>();
 		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
 		for(Node n:copy) {
 			int flag = 0;
 			scannedNodes = new ArrayList<>();
@@ -294,7 +308,10 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 			for(int i=0;i<res1.size();i++) {
 				for(int j=0;j<res2.size();j++) {
 					if(res1.get(i).isSameNode(res2.get(j))) {
-						res.add(n);
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
 						flag = 1;
 						break;
 					}
@@ -303,8 +320,8 @@ public class MyXPathVisitor extends XPathBaseVisitor<List<Node>> {
 					break;
 			}
 		}
-		scannedNodes = new ArrayList<>(res);
-		return scannedNodes;
+		scannedNodes = new ArrayList<>(result);
+		return result;
 	}
 	
 	@Override public List<Node> visitFilter_or(XPathParser.Filter_orContext ctx) {

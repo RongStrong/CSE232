@@ -28,7 +28,7 @@ cond
  | xq CEQUAL xq 				#cond_ceq
  | xq DEQUAL xq 				#cond_deq
  | xq IS xq 					#cond_is
- | EMPTY LPAREN xq RPAREN 	#cond_empty
+ | EMPTY LPAREN xq RPAREN 		#cond_empty
  | SOME var IN xq (COMMA var IN xq)* SATISFIES cond    #cond_satisfy
  | LPAREN cond RPAREN 			#cond_paren
  | cond AND cond				#cond_and
