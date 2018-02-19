@@ -13,6 +13,7 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	private Document inDoc;
 	List<Node> scannedNodes = new ArrayList<>();
 	private Map<String,List<Node>> contextMap = new HashMap<>();
+	private Stack<Map<String,List<Node>>> contextStack = new Stack<>();
 	
 	public MyXQueryVisitor(){
         try {
@@ -200,7 +201,7 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 		List<Node> tmp = visit(ctx.xq());
 		List<Node> res = new ArrayList<>();
 		if(tmp.isEmpty()) {
-			Node True = doc.createTextNode("true");
+			Node True = inDoc.createTextNode("true");
             res.add(True);
 		}
 		return res;
@@ -281,9 +282,42 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 		}
 		return res;
 	}
-
-	@Override public T visitCond_satisfy(XQueryParser.Cond_satisfyContext ctx) { 
+	
+	private boolean dfsSatisfy(XQueryParser.Cond_satisfyContext ctx, int level) {
+		int size = ctx.var().size();
+		if(level==size) {
+			if(visit(ctx.cond()).size()>0)
+				return true;
+		}
 		
+		List<Node> values = visit(ctx.xq(level));
+		String varName = ctx.var(level).getText();
+		for(Node n:values) {
+			List<Node> binding = new ArrayList<>();
+			binding.add(n);
+			Map<String,List<Node>> preContext = new HashMap<>(contextMap);
+			contextStack.push(preContext);
+			contextMap.put(varName, binding);
+			
+			if(level<size) {
+				if(dfsSatisfy(ctx,level+1)) {
+					contextMap = contextStack.pop();
+					return true;
+				}
+			}
+			contextMap = contextStack.pop();
+		}
+		return false;
+	}
+	
+	@Override public List<Node> visitCond_satisfy(XQueryParser.Cond_satisfyContext ctx) { 
+		List<Node> res = new ArrayList<>();
+		Boolean sat = dfsSatisfy(ctx,0);
+		if(sat) {
+			Node True = inDoc.createTextNode("true");
+            res.add(True);
+		}
+		return res;
 	}
 	/**
 	 * {@inheritDoc}
