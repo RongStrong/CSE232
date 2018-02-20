@@ -195,7 +195,15 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCond_and(XQueryParser.Cond_andContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitCond_and(XQueryParser.Cond_andContext ctx) {
+		List<Node> l = new ArrayList<Node>(visit(ctx.cond(0)));
+		List<Node> r = new ArrayList<Node>(visit(ctx.cond(1)));
+		List<Node> res = new ArrayList<Node>();
+		if(!l.isEmpty() && !r.isEmpty()) {
+			res.add(inDoc.createTextNode("true"));
+		}
+		return res;
+	}
 
 	@Override public List<Node> visitCond_empty(XQueryParser.Cond_emptyContext ctx) { 
 		List<Node> tmp = visit(ctx.xq());
@@ -325,21 +333,41 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCond_paren(XQueryParser.Cond_parenContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitCond_paren(XQueryParser.Cond_parenContext ctx) {
+		return visit(ctx.cond());
+	 }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCond_not(XQueryParser.Cond_notContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitCond_not(XQueryParser.Cond_notContext ctx) {
+		List<Node> res = new ArrayList<Node>(visit(ctx.cond()));
+		if(res.isEmpty()) {
+			res.add(inDoc.createTextNode("true"));
+		}
+		else {
+			res.remove(0);
+		}
+		return res;
+		
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCond_or(XQueryParser.Cond_orContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitCond_or(XQueryParser.Cond_orContext ctx) {
+		List<Node> l = new ArrayList<Node>(visit(ctx.cond(0)));
+		List<Node> r = new ArrayList<Node>(visit(ctx.cond(1)));
+		List<Node> res = new ArrayList<Node>();
+		if(!l.isEmpty() || !r.isEmpty()) {
+			res.add(inDoc.createTextNode("true"));
+		}
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
