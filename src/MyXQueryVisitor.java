@@ -126,7 +126,37 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitXq_flwr(XQueryParser.Xq_flwrContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitXq_flwr(XQueryParser.Xq_flwrContext ctx) {
+		List<Node> res = new ArrayList<Node>();
+		flwr(0, res, ctx);
+		return res;
+	}
+	
+	private void flwr(int n, List<Node> res, XQueryParser.Xq_flwrContext ctx) {
+		if(n < ctx.forClause().var().size()) {
+			
+			contextStack.push(new HashMap<String, List<Node>>(contextMap));
+			
+			for(int i = 0; i < visit(ctx.forClause().xq(n)).size(); i++) {
+				List<Node> v = new ArrayList<Node>();
+				v.add(visit(ctx.forClause().xq(n)).get(i));
+				contextStack.push(new HashMap<String, List<Node>>(contextMap));
+				contextMap.put(ctx.forClause().var(n).getText(), v);
+				flwr(n + 1, res, ctx);
+				contextMap = contextStack.pop();
+			}
+			
+			contextMap = contextStack.pop();
+		}
+		else {
+			contextStack.push(new HashMap<String, List<Node>>(contextMap));
+			visit(ctx.letClause());
+			if(!visit(ctx.whereClause()).isEmpty()) {
+				res.addAll(visit(ctx.returnClause()));
+			}
+			contextMap = contextStack.pop();
+		}
+	}
 
 	
 	@Override public List<Node> visitXq_tag(XQueryParser.Xq_tagContext ctx) { 
@@ -143,7 +173,14 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitXq_let(XQueryParser.Xq_letContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitXq_let(XQueryParser.Xq_letContext ctx) {
+		contextStack.push(new HashMap<String, List<Node>>(contextMap));
+		for(int i = 0; i < ctx.letClause().var().size(); i++) {
+			contextMap.put(ctx.letClause().var(i).getText(), visit(ctx.letClause().xq(i)));
+		}
+		contextMap = contextStack.pop();
+		return(visit(ctx.xq()));
+	}
 	
 	
 	@Override public List<Node> visitXq_comma(XQueryParser.Xq_commaContext ctx) { 
@@ -160,35 +197,53 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitJoinClause(XQueryParser.JoinClauseContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitJoinClause(XQueryParser.JoinClauseContext ctx) {
+		return null;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitForClause(XQueryParser.ForClauseContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitForClause(XQueryParser.ForClauseContext ctx) {
+		return null;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLetClause(XQueryParser.LetClauseContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitLetClause(XQueryParser.LetClauseContext ctx) {
+		for(int i = 0; i < ctx.var().size(); i++) {
+			contextMap.put(ctx.var(i).getText(), visit(ctx.xq(i)));
+		}
+		return null;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitWhereClause(XQueryParser.WhereClauseContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitWhereClause(XQueryParser.WhereClauseContext ctx) {
+		List<Node> res = new ArrayList<Node>();
+		List<Node> child = visit(ctx.cond());
+		if(!child.isEmpty()) {
+			res.add(inDoc.createTextNode("true"));
+		}
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitReturnClause(XQueryParser.ReturnClauseContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitReturnClause(XQueryParser.ReturnClauseContext ctx) {
+		return(visit(ctx.xq()));
+	}
 	/**
 	 * {@inheritDoc}
 	 *
