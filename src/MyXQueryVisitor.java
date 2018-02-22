@@ -436,7 +436,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVar(XQueryParser.VarContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitVar(XQueryParser.VarContext ctx) {
+		return(contextMap.get(ctx.getText()));
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -444,7 +446,11 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitAp_child(XQueryParser.Ap_childContext ctx) {
-		 }
+		visit(ctx.doc());
+		List<Node> res = visit(ctx.rp());
+        scannedNodes = res;
+        return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -452,7 +458,16 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitAp_all(XQueryParser.Ap_allContext ctx) {
-		 }
+		List<Node> res;
+		visit(ctx.doc());
+		List<Node> allDescendant = new ArrayList<>();
+		for(int i=0;i<scannedNodes.size();i++) {
+			allDescendant.addAll(dfsGetNodes(scannedNodes.get(i),true));
+		}
+		scannedNodes.addAll(allDescendant);
+		res = visit(ctx.rp());
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -460,7 +475,16 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_dslash(XQueryParser.Rp_dslashContext ctx) {
-		 }
+		List<Node> res;
+		visit(ctx.rp(0));
+		List<Node> allDescendant = new ArrayList<>();
+		for(int i=0;i<scannedNodes.size();i++) {
+			allDescendant.addAll(dfsGetNodes(scannedNodes.get(i),true));
+		}
+		scannedNodes.addAll(allDescendant);
+		res = visit(ctx.rp(1));
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -468,14 +492,24 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_star(XQueryParser.Rp_starContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		for(int i=0;i<scannedNodes.size();i++) {
+			for(int j=0;j<scannedNodes.get(i).getChildNodes().getLength();j++) {
+				res.add(scannedNodes.get(i).getChildNodes().item(j));
+			}
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitRp_dot(XQueryParser.Rp_dotContext ctx) {  }
+	@Override public List<Node> visitRp_dot(XQueryParser.Rp_dotContext ctx) {
+		return scannedNodes;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -483,7 +517,16 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_comma(XQueryParser.Rp_commaContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> res1 = new ArrayList<>(visit(ctx.rp(0)));
+		scannedNodes = copy;
+		List<Node> res2 = new ArrayList<>(visit(ctx.rp(1)));
+		res.addAll(res1);
+		res.addAll(res2);
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -491,7 +534,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_ddot(XQueryParser.Rp_ddotContext ctx) {
-		 }
+		Set<Node> set = new HashSet<>();
+		List<Node> res = new ArrayList<>();
+		for(int i=0;i<scannedNodes.size();i++) {
+			if(!set.contains(scannedNodes.get(i).getParentNode())) {
+				set.add(scannedNodes.get(i).getParentNode());
+				res.add(scannedNodes.get(i).getParentNode());
+			}
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -499,7 +552,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_text(XQueryParser.Rp_textContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		for(Node n:scannedNodes) {
+			for(int i=0;i<n.getChildNodes().getLength();i++) {
+				Node child = n.getChildNodes().item(i);
+				if(child.getNodeType()==Node.TEXT_NODE&&!child.getTextContent().equals("\n")&&!child.getTextContent().isEmpty())
+					res.add(child);
+			}
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -507,7 +570,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_tagName(XQueryParser.Rp_tagNameContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		for(Node n:scannedNodes) {
+			for(int i=0;i<n.getChildNodes().getLength();i++) {
+				Node child = n.getChildNodes().item(i);
+				if(child.getNodeType()==Node.ELEMENT_NODE&&child.getNodeName().equals(ctx.getText()))
+					res.add(child);
+			}
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -515,14 +588,21 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_filter(XQueryParser.Rp_filterContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		visit(ctx.rp());
+		res = visit(ctx.filter());
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitRp_paren(XQueryParser.Rp_parenContext ctx) {  }
+	@Override public List<Node> visitRp_paren(XQueryParser.Rp_parenContext ctx) {
+		return visit(ctx.rp());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -530,7 +610,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_at(XQueryParser.Rp_atContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		for(Node n:scannedNodes) {
+			if(n.getNodeType()==Node.ELEMENT_NODE&&n.hasAttributes()) {
+				Element elem = (Element) n;
+				if(elem.hasAttribute(ctx.attName().toString()))
+					res.add(n);
+			}
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -538,7 +628,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_slash(XQueryParser.Rp_slashContext ctx) {
-		 }
+		visit(ctx.rp(0));
+		return visit(ctx.rp(1));
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -559,16 +651,16 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	    
 	    try {
 	        if (db != null) {
-	        	gDoc = db.parse(f);
+	        	inDoc = db.parse(f);
 	        }
 	    } catch(Exception e) {
 	        e.printStackTrace();
 	    }
-	    if (gDoc != null) {
-	    	gDoc.getDocumentElement().normalize();
+	    if (inDoc != null) {
+	    	inDoc.getDocumentElement().normalize();
 	    }
 	    
-	    res.add(gDoc);
+	    res.add(inDoc);
 	    scannedNodes = res;
 	    return res;
 	}
@@ -579,7 +671,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_rp(XQueryParser.Filter_rpContext ctx) {
-		 }
+		List<Node> res = new ArrayList<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		for(Node n:copy) {
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			if(visit(ctx.rp()).size()>0)
+				res.add(n);
+		}
+		scannedNodes = res;
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -587,7 +689,14 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_and(XQueryParser.Filter_andContext ctx) {
-		 }
+		Set<Node> res = new HashSet<>();
+		Set<Node> f1 = new HashSet<>(visit(ctx.filter(0)));
+		Set<Node> f2 = new HashSet<>(visit(ctx.filter(1)));
+		res.addAll(f1);
+		res.retainAll(f2);
+		scannedNodes = new ArrayList<>(res);
+		return new ArrayList<>(res);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -595,7 +704,35 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_eq(XQueryParser.Filter_eqContext ctx) {
-		 }
+		Set<Node> res = new HashSet<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
+		for(Node n:copy) {
+			int flag = 0;
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res1 = visit(ctx.rp(0));
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res2 = visit(ctx.rp(1));
+			for(int i=0;i<res1.size();i++) {
+				for(int j=0;j<res2.size();j++) {
+					if(res1.get(i).isEqualNode(res2.get(j))) {
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
+						flag = 1;
+						break;
+					}
+				}
+				if(flag==1)
+					break;
+			}
+		}
+		scannedNodes = new ArrayList<>(result);
+		return result;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -603,14 +740,44 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_is(XQueryParser.Filter_isContext ctx) {
+		Set<Node> res = new HashSet<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
+		for(Node n:copy) {
+			int flag = 0;
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res1 = visit(ctx.rp(0));
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res2 = visit(ctx.rp(1));
+			for(int i=0;i<res1.size();i++) {
+				for(int j=0;j<res2.size();j++) {
+					if(res1.get(i).isSameNode(res2.get(j))) {
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
+						flag = 1;
+						break;
+					}
+				}
+				if(flag==1)
+					break;
+			}
 		}
+		scannedNodes = new ArrayList<>(result);
+		return result;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitFilter_paren(XQueryParser.Filter_parenContext ctx) {  }
+	@Override public List<Node> visitFilter_paren(XQueryParser.Filter_parenContext ctx) {
+		return visit(ctx.filter());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -618,7 +785,35 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_ceq(XQueryParser.Filter_ceqContext ctx) {
-		 }
+		Set<Node> res = new HashSet<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
+		for(Node n:copy) {
+			int flag = 0;
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res1 = visit(ctx.rp(0));
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res2 = visit(ctx.rp(1));
+			for(int i=0;i<res1.size();i++) {
+				for(int j=0;j<res2.size();j++) {
+					if(res1.get(i).isEqualNode(res2.get(j))) {
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
+						flag = 1;
+						break;
+					}
+				}
+				if(flag==1)
+					break;
+			}
+		}
+		scannedNodes = new ArrayList<>(result);
+		return result;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -626,15 +821,50 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_deq(XQueryParser.Filter_deqContext ctx) { 
-		 }
+		Set<Node> res = new HashSet<>();
+		List<Node> copy = new ArrayList<>(scannedNodes);
+		List<Node> result = new ArrayList<>();
+		for(Node n:copy) {
+			int flag = 0;
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res1 = visit(ctx.rp(0));
+			scannedNodes = new ArrayList<>();
+			scannedNodes.add(n);
+			List<Node> res2 = visit(ctx.rp(1));
+			for(int i=0;i<res1.size();i++) {
+				for(int j=0;j<res2.size();j++) {
+					if(res1.get(i).isSameNode(res2.get(j))) {
+						if(!res.contains(n)) {
+							res.add(n);
+							result.add(n);
+						}
+						flag = 1;
+						break;
+					}
+				}
+				if(flag==1)
+					break;
+			}
+		}
+		scannedNodes = new ArrayList<>(result);
+		return result;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitFilter_or(XQueryParser.Filter_orContext ctx) { Set<Node> res = new HashSet<>();
-		 }
+	@Override public List<Node> visitFilter_or(XQueryParser.Filter_orContext ctx) {
+		Set<Node> res = new HashSet<>();
+		Set<Node> f1 = new HashSet<>(visit(ctx.filter(0)));
+		Set<Node> f2 = new HashSet<>(visit(ctx.filter(1)));
+		res.addAll(f1);
+		res.addAll(f2);
+		scannedNodes = new ArrayList<>(res);
+		return new ArrayList<>(res);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -642,27 +872,40 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitFilter_not(XQueryParser.Filter_notContext ctx) { 
-		 }
+		Set<Node> res = new HashSet<>();
+		Set<Node> f1 = new HashSet<>(scannedNodes);
+		Set<Node> f2 = new HashSet<>(visit(ctx.filter()));
+		res.addAll(f1);
+		res.removeAll(f2);
+		scannedNodes = new ArrayList<>(res);
+		return new ArrayList<>(res);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitTagName(XQueryParser.TagNameContext ctx) {  }
+	@Override public List<Node> visitTagName(XQueryParser.TagNameContext ctx) {
+		return visitChildren(ctx);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitAttName(XQueryParser.AttNameContext ctx) {  }
+	@Override public List<Node> visitAttName(XQueryParser.AttNameContext ctx) {
+		return visitChildren(ctx);
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public List<Node> visitFileName(XQueryParser.FileNameContext ctx) {  }
+	@Override public List<Node> visitFileName(XQueryParser.FileNameContext ctx) {
+		return visitChildren(ctx); 
+	}
 
 }
