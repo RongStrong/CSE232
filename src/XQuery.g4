@@ -53,5 +53,5 @@ SATISFIES : 'satisfies' ;
 
 joinAttr : LBRACKET NAME ? (COMMA NAME)* RBRACKET; 
 var : '$' NAME;
-StringConstant: '"'+[a-zA-Z0-9,.!?:; _'"-]+'"';
+StringConstant: '"'+[a-zA-Z0-9,.!?; ''""-]+'"';
 
