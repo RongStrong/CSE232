@@ -16,9 +16,9 @@ public class XPathParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, NOT=3, OR=4, AND=5, IS=6, DEQUAL=7, EQUAL=8, CEQUAL=9, 
-		TEXT=10, LPAREN=11, RPAREN=12, LBRACKET=13, RBRACKET=14, SLASH=15, STAR=16, 
-		DSLASH=17, DOT=18, DDOT=19, AT=20, COMMA=21, NAME=22, FILENAME=23, WHITESPACE=24;
+		T__0=1, T__1=2, T__2=3, NOT=4, OR=5, AND=6, IS=7, DEQUAL=8, EQUAL=9, CEQUAL=10, 
+		TEXT=11, LPAREN=12, RPAREN=13, LBRACKET=14, RBRACKET=15, SLASH=16, STAR=17, 
+		DSLASH=18, DOT=19, DDOT=20, AT=21, COMMA=22, NAME=23, FILENAME=24, WHITESPACE=25;
 	public static final int
 		RULE_ap = 0, RULE_rp = 1, RULE_doc = 2, RULE_filter = 3, RULE_tagName = 4, 
 		RULE_attName = 5, RULE_fileName = 6;
@@ -27,12 +27,12 @@ public class XPathParser extends Parser {
 	};
 
 	private static final String[] _LITERAL_NAMES = {
-		null, "'doc'", "'\"'", "'not'", "'or'", "'and'", "'is'", "'=='", "'='", 
-		"'eq'", "'text'", "'('", "')'", "'['", "']'", "'/'", "'*'", "'//'", "'.'", 
-		"'..'", "'@'", "','"
+		null, "'doc'", "'\"'", "'document'", "'not'", "'or'", "'and'", "'is'", 
+		"'=='", "'='", "'eq'", "'text'", "'('", "')'", "'['", "']'", "'/'", "'*'", 
+		"'//'", "'.'", "'..'", "'@'", "','"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, "NOT", "OR", "AND", "IS", "DEQUAL", "EQUAL", "CEQUAL", 
+		null, null, null, null, "NOT", "OR", "AND", "IS", "DEQUAL", "EQUAL", "CEQUAL", 
 		"TEXT", "LPAREN", "RPAREN", "LBRACKET", "RBRACKET", "SLASH", "STAR", "DSLASH", 
 		"DOT", "DDOT", "AT", "COMMA", "NAME", "FILENAME", "WHITESPACE"
 	};
@@ -628,20 +628,45 @@ public class XPathParser extends Parser {
 		DocContext _localctx = new DocContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_doc);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(59);
-			match(T__0);
-			setState(60);
-			match(LPAREN);
-			setState(61);
-			match(T__1);
-			setState(62);
-			fileName();
-			setState(63);
-			match(T__1);
-			setState(64);
-			match(RPAREN);
+			setState(73);
+			_errHandler.sync(this);
+			switch (_input.LA(1)) {
+			case T__0:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(59);
+				match(T__0);
+				setState(60);
+				match(LPAREN);
+				setState(61);
+				match(T__1);
+				setState(62);
+				fileName();
+				setState(63);
+				match(T__1);
+				setState(64);
+				match(RPAREN);
+				}
+				break;
+			case T__2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(66);
+				match(T__2);
+				setState(67);
+				match(LPAREN);
+				setState(68);
+				match(T__1);
+				setState(69);
+				fileName();
+				setState(70);
+				match(T__1);
+				setState(71);
+				match(RPAREN);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -880,16 +905,16 @@ public class XPathParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(90);
+			setState(99);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
 			case 1:
 				{
 				_localctx = new Filter_rpContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
 
-				setState(67);
+				setState(76);
 				rp(0);
 				}
 				break;
@@ -898,11 +923,11 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_eqContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(68);
+				setState(77);
 				rp(0);
-				setState(69);
+				setState(78);
 				match(EQUAL);
-				setState(70);
+				setState(79);
 				rp(0);
 				}
 				break;
@@ -911,11 +936,11 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_ceqContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(72);
+				setState(81);
 				rp(0);
-				setState(73);
+				setState(82);
 				match(CEQUAL);
-				setState(74);
+				setState(83);
 				rp(0);
 				}
 				break;
@@ -924,11 +949,11 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_deqContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(76);
+				setState(85);
 				rp(0);
-				setState(77);
+				setState(86);
 				match(DEQUAL);
-				setState(78);
+				setState(87);
 				rp(0);
 				}
 				break;
@@ -937,11 +962,11 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_isContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(80);
+				setState(89);
 				rp(0);
-				setState(81);
+				setState(90);
 				match(IS);
-				setState(82);
+				setState(91);
 				rp(0);
 				}
 				break;
@@ -950,11 +975,11 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_parenContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(84);
+				setState(93);
 				match(LPAREN);
-				setState(85);
+				setState(94);
 				filter(0);
-				setState(86);
+				setState(95);
 				match(RPAREN);
 				}
 				break;
@@ -963,34 +988,34 @@ public class XPathParser extends Parser {
 				_localctx = new Filter_notContext(_localctx);
 				_ctx = _localctx;
 				_prevctx = _localctx;
-				setState(88);
+				setState(97);
 				match(NOT);
-				setState(89);
+				setState(98);
 				filter(1);
 				}
 				break;
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(100);
+			setState(109);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
 					_prevctx = _localctx;
 					{
-					setState(98);
+					setState(107);
 					_errHandler.sync(this);
-					switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
+					switch ( getInterpreter().adaptivePredict(_input,6,_ctx) ) {
 					case 1:
 						{
 						_localctx = new Filter_andContext(new FilterContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_filter);
-						setState(92);
+						setState(101);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
-						setState(93);
+						setState(102);
 						match(AND);
-						setState(94);
+						setState(103);
 						filter(4);
 						}
 						break;
@@ -998,20 +1023,20 @@ public class XPathParser extends Parser {
 						{
 						_localctx = new Filter_orContext(new FilterContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_filter);
-						setState(95);
+						setState(104);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-						setState(96);
+						setState(105);
 						match(OR);
-						setState(97);
+						setState(106);
 						filter(3);
 						}
 						break;
 					}
 					} 
 				}
-				setState(102);
+				setState(111);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,7,_ctx);
 			}
 			}
 		}
@@ -1053,7 +1078,7 @@ public class XPathParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(103);
+			setState(112);
 			match(NAME);
 			}
 		}
@@ -1095,7 +1120,7 @@ public class XPathParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(105);
+			setState(114);
 			match(NAME);
 			}
 		}
@@ -1137,7 +1162,7 @@ public class XPathParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(107);
+			setState(116);
 			match(FILENAME);
 			}
 		}
@@ -1185,34 +1210,36 @@ public class XPathParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\32p\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\33y\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
 		"\3\2\5\2\31\n\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
 		"\3\5\3)\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\7"+
-		"\39\n\3\f\3\16\3<\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5"+
-		"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
-		"\5\3\5\5\5]\n\5\3\5\3\5\3\5\3\5\3\5\3\5\7\5e\n\5\f\5\16\5h\13\5\3\6\3"+
-		"\6\3\7\3\7\3\b\3\b\3\b\2\4\4\b\t\2\4\6\b\n\f\16\2\2\2{\2\30\3\2\2\2\4"+
-		"(\3\2\2\2\6=\3\2\2\2\b\\\3\2\2\2\ni\3\2\2\2\fk\3\2\2\2\16m\3\2\2\2\20"+
-		"\21\5\6\4\2\21\22\7\21\2\2\22\23\5\4\3\2\23\31\3\2\2\2\24\25\5\6\4\2\25"+
-		"\26\7\23\2\2\26\27\5\4\3\2\27\31\3\2\2\2\30\20\3\2\2\2\30\24\3\2\2\2\31"+
-		"\3\3\2\2\2\32\33\b\3\1\2\33)\5\n\6\2\34)\7\22\2\2\35)\7\24\2\2\36)\7\25"+
-		"\2\2\37 \7\f\2\2 !\7\r\2\2!)\7\16\2\2\"#\7\26\2\2#)\5\f\7\2$%\7\r\2\2"+
-		"%&\5\4\3\2&\'\7\16\2\2\')\3\2\2\2(\32\3\2\2\2(\34\3\2\2\2(\35\3\2\2\2"+
-		"(\36\3\2\2\2(\37\3\2\2\2(\"\3\2\2\2($\3\2\2\2):\3\2\2\2*+\f\6\2\2+,\7"+
-		"\21\2\2,9\5\4\3\7-.\f\5\2\2./\7\23\2\2/9\5\4\3\6\60\61\f\3\2\2\61\62\7"+
-		"\27\2\2\629\5\4\3\4\63\64\f\4\2\2\64\65\7\17\2\2\65\66\5\b\5\2\66\67\7"+
-		"\20\2\2\679\3\2\2\28*\3\2\2\28-\3\2\2\28\60\3\2\2\28\63\3\2\2\29<\3\2"+
-		"\2\2:8\3\2\2\2:;\3\2\2\2;\5\3\2\2\2<:\3\2\2\2=>\7\3\2\2>?\7\r\2\2?@\7"+
-		"\4\2\2@A\5\16\b\2AB\7\4\2\2BC\7\16\2\2C\7\3\2\2\2DE\b\5\1\2E]\5\4\3\2"+
-		"FG\5\4\3\2GH\7\n\2\2HI\5\4\3\2I]\3\2\2\2JK\5\4\3\2KL\7\13\2\2LM\5\4\3"+
-		"\2M]\3\2\2\2NO\5\4\3\2OP\7\t\2\2PQ\5\4\3\2Q]\3\2\2\2RS\5\4\3\2ST\7\b\2"+
-		"\2TU\5\4\3\2U]\3\2\2\2VW\7\r\2\2WX\5\b\5\2XY\7\16\2\2Y]\3\2\2\2Z[\7\5"+
-		"\2\2[]\5\b\5\3\\D\3\2\2\2\\F\3\2\2\2\\J\3\2\2\2\\N\3\2\2\2\\R\3\2\2\2"+
-		"\\V\3\2\2\2\\Z\3\2\2\2]f\3\2\2\2^_\f\5\2\2_`\7\7\2\2`e\5\b\5\6ab\f\4\2"+
-		"\2bc\7\6\2\2ce\5\b\5\5d^\3\2\2\2da\3\2\2\2eh\3\2\2\2fd\3\2\2\2fg\3\2\2"+
-		"\2g\t\3\2\2\2hf\3\2\2\2ij\7\30\2\2j\13\3\2\2\2kl\7\30\2\2l\r\3\2\2\2m"+
-		"n\7\31\2\2n\17\3\2\2\2\t\30(8:\\df";
+		"\39\n\3\f\3\16\3<\13\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4"+
+		"\3\4\3\4\5\4L\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5"+
+		"\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5f\n\5\3\5\3\5\3\5\3\5"+
+		"\3\5\3\5\7\5n\n\5\f\5\16\5q\13\5\3\6\3\6\3\7\3\7\3\b\3\b\3\b\2\4\4\b\t"+
+		"\2\4\6\b\n\f\16\2\2\2\u0085\2\30\3\2\2\2\4(\3\2\2\2\6K\3\2\2\2\be\3\2"+
+		"\2\2\nr\3\2\2\2\ft\3\2\2\2\16v\3\2\2\2\20\21\5\6\4\2\21\22\7\22\2\2\22"+
+		"\23\5\4\3\2\23\31\3\2\2\2\24\25\5\6\4\2\25\26\7\24\2\2\26\27\5\4\3\2\27"+
+		"\31\3\2\2\2\30\20\3\2\2\2\30\24\3\2\2\2\31\3\3\2\2\2\32\33\b\3\1\2\33"+
+		")\5\n\6\2\34)\7\23\2\2\35)\7\25\2\2\36)\7\26\2\2\37 \7\r\2\2 !\7\16\2"+
+		"\2!)\7\17\2\2\"#\7\27\2\2#)\5\f\7\2$%\7\16\2\2%&\5\4\3\2&\'\7\17\2\2\'"+
+		")\3\2\2\2(\32\3\2\2\2(\34\3\2\2\2(\35\3\2\2\2(\36\3\2\2\2(\37\3\2\2\2"+
+		"(\"\3\2\2\2($\3\2\2\2):\3\2\2\2*+\f\6\2\2+,\7\22\2\2,9\5\4\3\7-.\f\5\2"+
+		"\2./\7\24\2\2/9\5\4\3\6\60\61\f\3\2\2\61\62\7\30\2\2\629\5\4\3\4\63\64"+
+		"\f\4\2\2\64\65\7\20\2\2\65\66\5\b\5\2\66\67\7\21\2\2\679\3\2\2\28*\3\2"+
+		"\2\28-\3\2\2\28\60\3\2\2\28\63\3\2\2\29<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;"+
+		"\5\3\2\2\2<:\3\2\2\2=>\7\3\2\2>?\7\16\2\2?@\7\4\2\2@A\5\16\b\2AB\7\4\2"+
+		"\2BC\7\17\2\2CL\3\2\2\2DE\7\5\2\2EF\7\16\2\2FG\7\4\2\2GH\5\16\b\2HI\7"+
+		"\4\2\2IJ\7\17\2\2JL\3\2\2\2K=\3\2\2\2KD\3\2\2\2L\7\3\2\2\2MN\b\5\1\2N"+
+		"f\5\4\3\2OP\5\4\3\2PQ\7\13\2\2QR\5\4\3\2Rf\3\2\2\2ST\5\4\3\2TU\7\f\2\2"+
+		"UV\5\4\3\2Vf\3\2\2\2WX\5\4\3\2XY\7\n\2\2YZ\5\4\3\2Zf\3\2\2\2[\\\5\4\3"+
+		"\2\\]\7\t\2\2]^\5\4\3\2^f\3\2\2\2_`\7\16\2\2`a\5\b\5\2ab\7\17\2\2bf\3"+
+		"\2\2\2cd\7\6\2\2df\5\b\5\3eM\3\2\2\2eO\3\2\2\2eS\3\2\2\2eW\3\2\2\2e[\3"+
+		"\2\2\2e_\3\2\2\2ec\3\2\2\2fo\3\2\2\2gh\f\5\2\2hi\7\b\2\2in\5\b\5\6jk\f"+
+		"\4\2\2kl\7\7\2\2ln\5\b\5\5mg\3\2\2\2mj\3\2\2\2nq\3\2\2\2om\3\2\2\2op\3"+
+		"\2\2\2p\t\3\2\2\2qo\3\2\2\2rs\7\31\2\2s\13\3\2\2\2tu\7\31\2\2u\r\3\2\2"+
+		"\2vw\7\32\2\2w\17\3\2\2\2\n\30(8:Kemo";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

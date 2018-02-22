@@ -19,7 +19,9 @@ rp
  | rp COMMA rp						#rp_comma
  ;
  
-doc: 'doc' LPAREN '"' fileName '"' RPAREN;
+doc: 'doc' LPAREN '"' fileName '"' RPAREN 
+| 'document' LPAREN '"' fileName '"' RPAREN
+;
  
 filter
  : rp								#filter_rp
