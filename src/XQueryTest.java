@@ -27,7 +27,7 @@ public class XQueryTest {
 		MyXQueryVisitor visitor = new MyXQueryVisitor();
 		List<Node> res = visitor.visit(tree);
 		writeFile(res, "output.xml");
-		System.out.print(res.size());
+		//System.out.print(res.size());
 	}
 	
 	private static void writeFile(List<Node> result, String outputFile) throws TransformerException, FileNotFoundException

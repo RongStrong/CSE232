@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bookstore>
+
+<book>
+  <title lang="eng">Harry Potter</title>
+  <price>29.99</price>
+</book>
+
+<book>
+  <title lang="eng">Learning XML</title>
+  <price>39.95</price>
+</book>
+
+<book>
+  <title lang="chi">The Three Kindoms</title>
+  <price>100.00</price>
+</book>
+
+<book>
+  <title>The Star Wars</title>
+</book>
+
+</bookstore>

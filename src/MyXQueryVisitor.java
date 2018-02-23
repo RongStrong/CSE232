@@ -150,8 +150,8 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 		}
 		else {
 			contextStack.push(new HashMap<String, List<Node>>(contextMap));
-			visit(ctx.letClause());
-			if(!visit(ctx.whereClause()).isEmpty()) {
+			if(ctx.letClause() != null) visit(ctx.letClause());
+			if(ctx.whereClause() == null || !visit(ctx.whereClause()).isEmpty()) {
 				res.addAll(visit(ctx.returnClause()));
 			}
 			contextMap = contextStack.pop();
@@ -351,6 +351,8 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 		if(level==size) {
 			if(visit(ctx.cond()).size()>0)
 				return true;
+			else
+				return false;
 		}
 		
 		List<Node> values = visit(ctx.xq(level));
@@ -610,16 +612,20 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_at(XQueryParser.Rp_atContext ctx) {
+		
 		List<Node> res = new ArrayList<>();
 		for(Node n:scannedNodes) {
 			if(n.getNodeType()==Node.ELEMENT_NODE&&n.hasAttributes()) {
 				Element elem = (Element) n;
-				if(elem.hasAttribute(ctx.attName().toString()))
-					res.add(n);
+				if(elem.hasAttribute(ctx.attName().getText())) {
+					res.add(n.getAttributes().getNamedItem(ctx.attName().getText()));
+					//System.out.println(n.getAttributes().getNamedItem(ctx.attName().getText()).getNodeName());
+				}
 			}
 		}
 		scannedNodes = res;
 		return res;
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -640,7 +646,7 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	@Override public List<Node> visitDoc(XQueryParser.DocContext ctx) { 
 		List<Node> res = new ArrayList<>();
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	    System.out.print(ctx.fileName().getText());
+	    System.out.println(ctx.fileName().getText());
 	    File f = new File(ctx.fileName().getText());
 	    DocumentBuilder db = null;
 	    try {

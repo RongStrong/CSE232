@@ -1,1 +1,1 @@
-doc("j_caesar.xml")//ACT
+document("book_store.xml")/bookstore//(book, title)[not price]
