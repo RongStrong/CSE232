@@ -135,9 +135,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	private void flwr(int n, List<Node> res, XQueryParser.Xq_flwrContext ctx) {
 		if(n < ctx.forClause().var().size()) {
 			
-			contextStack.push(new HashMap<String, List<Node>>(contextMap));
-			
-			for(int i = 0; i < visit(ctx.forClause().xq(n)).size(); i++) {
+			//contextStack.push(new HashMap<String, List<Node>>(contextMap));
+			int size = visit(ctx.forClause().xq(n)).size();
+			for(int i = 0; i < size; i++) {
 				List<Node> v = new ArrayList<Node>();
 				v.add(visit(ctx.forClause().xq(n)).get(i));
 				contextStack.push(new HashMap<String, List<Node>>(contextMap));
@@ -146,15 +146,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 				contextMap = contextStack.pop();
 			}
 			
-			contextMap = contextStack.pop();
+			//contextMap = contextStack.pop();
 		}
 		else {
-			contextStack.push(new HashMap<String, List<Node>>(contextMap));
-			visit(ctx.letClause());
-			if(!visit(ctx.whereClause()).isEmpty()) {
-				res.addAll(visit(ctx.returnClause()));
+			//contextStack.push(new HashMap<String, List<Node>>(contextMap));
+			if(ctx.letClause()!=null)
+				visit(ctx.letClause());
+			if(ctx.whereClause()!=null) {
+				if(!visit(ctx.whereClause()).isEmpty()) 
+					res.addAll(visit(ctx.returnClause()));
 			}
-			contextMap = contextStack.pop();
+			//contextMap = contextStack.pop();
 		}
 	}
 
@@ -174,12 +176,16 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitXq_let(XQueryParser.Xq_letContext ctx) {
-		contextStack.push(new HashMap<String, List<Node>>(contextMap));
-		for(int i = 0; i < ctx.letClause().var().size(); i++) {
+		//contextStack.push(new HashMap<String, List<Node>>(contextMap));
+		int size = ctx.letClause().var().size();
+		List<Node> res = new ArrayList<>();
+		for(int i = 0; i < size; i++) {
 			contextMap.put(ctx.letClause().var(i).getText(), visit(ctx.letClause().xq(i)));
+			if(i==size-1)
+				res = new ArrayList<>(contextMap.get(ctx.letClause().var(i).getText()));
 		}
-		contextMap = contextStack.pop();
-		return(visit(ctx.xq()));
+		//contextMap = contextStack.pop();
+		return res;
 	}
 	
 	
@@ -348,9 +354,13 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	
 	private boolean dfsSatisfy(XQueryParser.Cond_satisfyContext ctx, int level) {
 		int size = ctx.var().size();
+		System.out.println("size = "+size);
+		System.out.println("level = "+level);
 		if(level==size) {
 			if(visit(ctx.cond()).size()>0)
 				return true;
+			else
+				return false;
 		}
 		
 		List<Node> values = visit(ctx.xq(level));
@@ -640,7 +650,7 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	@Override public List<Node> visitDoc(XQueryParser.DocContext ctx) { 
 		List<Node> res = new ArrayList<>();
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-	    System.out.print(ctx.fileName().getText());
+	    //System.out.print(ctx.fileName().getText());
 	    File f = new File(ctx.fileName().getText());
 	    DocumentBuilder db = null;
 	    try {
