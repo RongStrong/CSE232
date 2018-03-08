@@ -149,19 +149,13 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 			//contextMap = contextStack.pop();
 		}
 		else {
-<<<<<<< HEAD
-			contextStack.push(new HashMap<String, List<Node>>(contextMap));
-			if(ctx.letClause() != null) visit(ctx.letClause());
-			if(ctx.whereClause() == null || !visit(ctx.whereClause()).isEmpty()) {
-				res.addAll(visit(ctx.returnClause()));
-=======
+
 			//contextStack.push(new HashMap<String, List<Node>>(contextMap));
 			if(ctx.letClause()!=null)
 				visit(ctx.letClause());
 			if(ctx.whereClause()!=null) {
 				if(!visit(ctx.whereClause()).isEmpty()) 
 					res.addAll(visit(ctx.returnClause()));
->>>>>>> origin/master
 			}
 			//contextMap = contextStack.pop();
 		}
@@ -661,11 +655,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	@Override public List<Node> visitDoc(XQueryParser.DocContext ctx) { 
 		List<Node> res = new ArrayList<>();
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-<<<<<<< HEAD
-	    System.out.println(ctx.fileName().getText());
-=======
+
 	    //System.out.print(ctx.fileName().getText());
->>>>>>> origin/master
+
 	    File f = new File(ctx.fileName().getText());
 	    DocumentBuilder db = null;
 	    try {
