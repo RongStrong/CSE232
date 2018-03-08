@@ -1,9 +1,11 @@
-for    $pgroup in doc("j_caesar.xml")//PGROUP,
-        $persona in $pgroup/PERSONA,
-        $act in doc("j_caesar.xml")//ACT,
-        $speaker in $act//SPEECH/SPEAKER
- where $persona/text() = $speaker/text() and $persona/text()="MARULLUS"
- return <tuple>{<act>{$act/TITLE}</act>,
-         <speaker>{$speaker}</speaker>,
-         <persona>{$persona}</persona>}
-         </tuple>
+for $b in doc("j_caesar.xml")/book,
+$a in doc("j_caesar.xml")/entry,
+$tb in $b/title,
+$ta in $a/title
+where $tb eq $ta
+return
+<book-with-prices>
+{ $tb,
+<price-review>{ $a/price }</price-review>,
+<price>{ $b/price }</price> }
+</book-with-prices>
