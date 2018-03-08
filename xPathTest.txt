@@ -1,1 +1,15 @@
+<<<<<<< HEAD
 document("book_store.xml")/bookstore//(book, title)[not price]
+=======
+for $b in doc("j_caesar.xml")/book,
+$a in doc("j_caesar.xml")/entry,
+$tb in $b/title,
+$ta in $a/title
+where $tb eq $ta
+return
+<book-with-prices>
+{ $tb,
+<price-review>{ $a/price }</price-review>,
+<price>{ $b/price }</price> }
+</book-with-prices>
+>>>>>>> origin/master

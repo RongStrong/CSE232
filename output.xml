@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <book>
   <title>The Star Wars</title>
 </book>
@@ -5,3 +6,5 @@
 <title lang="chi">The Three Kindoms</title>
 <title lang="eng">Learning XML</title>
 <title lang="eng">Harry Potter</title>
+=======
+>>>>>>> origin/master
