@@ -399,9 +399,9 @@ public class XQueryParser extends Parser {
 						_localctx = new Xq_commaContext(new XqContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_xq);
 						setState(66);
-						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
+						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(67); match(COMMA);
-						setState(68); xq(8);
+						setState(68); xq(6);
 						}
 						break;
 					case 2:
@@ -409,7 +409,7 @@ public class XQueryParser extends Parser {
 						_localctx = new Xq_slashContext(new XqContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_xq);
 						setState(69);
-						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
+						if (!(precpred(_ctx, 7))) throw new FailedPredicateException(this, "precpred(_ctx, 7)");
 						setState(70); match(SLASH);
 						setState(71); rp(0);
 						}
@@ -419,7 +419,7 @@ public class XQueryParser extends Parser {
 						_localctx = new Xq_dslashContext(new XqContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_xq);
 						setState(72);
-						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
+						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(73); match(DSLASH);
 						setState(74); rp(0);
 						}
@@ -451,7 +451,7 @@ public class XQueryParser extends Parser {
 		public XqContext xq(int i) {
 			return getRuleContext(XqContext.class,i);
 		}
-		public List<TerminalNode> LPAREN() { return getTokens(XQueryParser.LPAREN); }
+		public TerminalNode LPAREN() { return getToken(XQueryParser.LPAREN, 0); }
 		public List<TerminalNode> COMMA() { return getTokens(XQueryParser.COMMA); }
 		public List<XqContext> xq() {
 			return getRuleContexts(XqContext.class);
@@ -459,10 +459,8 @@ public class XQueryParser extends Parser {
 		public List<JoinAttrContext> joinAttr() {
 			return getRuleContexts(JoinAttrContext.class);
 		}
+		public TerminalNode RPAREN() { return getToken(XQueryParser.RPAREN, 0); }
 		public TerminalNode JOIN() { return getToken(XQueryParser.JOIN, 0); }
-		public TerminalNode LPAREN(int i) {
-			return getToken(XQueryParser.LPAREN, i);
-		}
 		public TerminalNode COMMA(int i) {
 			return getToken(XQueryParser.COMMA, i);
 		}
@@ -495,7 +493,7 @@ public class XQueryParser extends Parser {
 			setState(86); joinAttr();
 			setState(87); match(COMMA);
 			setState(88); joinAttr();
-			setState(89); match(LPAREN);
+			setState(89); match(RPAREN);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2127,9 +2125,9 @@ public class XQueryParser extends Parser {
 	}
 	private boolean xq_sempred(XqContext _localctx, int predIndex) {
 		switch (predIndex) {
-		case 0: return precpred(_ctx, 7);
-		case 1: return precpred(_ctx, 6);
-		case 2: return precpred(_ctx, 5);
+		case 0: return precpred(_ctx, 5);
+		case 1: return precpred(_ctx, 7);
+		case 2: return precpred(_ctx, 6);
 		}
 		return true;
 	}
@@ -2183,10 +2181,10 @@ public class XQueryParser extends Parser {
 		"\2\28:\5\6\4\29;\5\b\5\2:9\3\2\2\2:;\3\2\2\2;=\3\2\2\2<>\5\n\6\2=<\3\2"+
 		"\2\2=>\3\2\2\2>?\3\2\2\2?@\5\f\7\2@C\3\2\2\2AC\5\4\3\2B\"\3\2\2\2B&\3"+
 		"\2\2\2B\'\3\2\2\2B(\3\2\2\2B)\3\2\2\2B-\3\2\2\2B8\3\2\2\2BA\3\2\2\2CO"+
-		"\3\2\2\2DE\f\t\2\2EF\7(\2\2FN\5\2\2\nGH\f\b\2\2HI\7\"\2\2IN\5\26\f\2J"+
-		"K\f\7\2\2KL\7$\2\2LN\5\26\f\2MD\3\2\2\2MG\3\2\2\2MJ\3\2\2\2NQ\3\2\2\2"+
+		"\3\2\2\2DE\f\7\2\2EF\7(\2\2FN\5\2\2\bGH\f\t\2\2HI\7\"\2\2IN\5\26\f\2J"+
+		"K\f\b\2\2KL\7$\2\2LN\5\26\f\2MD\3\2\2\2MG\3\2\2\2MJ\3\2\2\2NQ\3\2\2\2"+
 		"OM\3\2\2\2OP\3\2\2\2P\3\3\2\2\2QO\3\2\2\2RS\7\f\2\2ST\7\36\2\2TU\5\2\2"+
-		"\2UV\7(\2\2VW\5\2\2\2WX\7(\2\2XY\5\20\t\2YZ\7(\2\2Z[\5\20\t\2[\\\7\36"+
+		"\2UV\7(\2\2VW\5\2\2\2WX\7(\2\2XY\5\20\t\2YZ\7(\2\2Z[\5\20\t\2[\\\7\37"+
 		"\2\2\\\5\3\2\2\2]^\7\17\2\2^_\5\22\n\2_`\7\r\2\2`h\5\2\2\2ab\7(\2\2bc"+
 		"\5\22\n\2cd\7\r\2\2de\5\2\2\2eg\3\2\2\2fa\3\2\2\2gj\3\2\2\2hf\3\2\2\2"+
 		"hi\3\2\2\2i\7\3\2\2\2jh\3\2\2\2kl\7\16\2\2lm\5\22\n\2mn\7\3\2\2nv\5\2"+

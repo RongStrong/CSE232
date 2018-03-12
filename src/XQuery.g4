@@ -7,16 +7,16 @@ xq
  | StringConstant				#xq_stringconst
  | ap							#xq_ap
  | LPAREN xq RPAREN				#xq_paren
- | xq COMMA xq					#xq_comma
  | xq SLASH rp 					#xq_slash
  | xq DSLASH rp					#xq_dslash
+ | xq COMMA xq					#xq_comma
  | LANGLE tagName RANGLE LBRACE xq RBRACE LANGLE SLASH tagName RANGLE	#xq_tag
  | forClause letClause? whereClause? returnClause #xq_flwr
  | letClause xq					#xq_let
  | joinClause 					#xq_join
  ;
  
-joinClause : JOIN LPAREN xq COMMA xq COMMA joinAttr COMMA joinAttr LPAREN;
+joinClause : JOIN LPAREN xq COMMA xq COMMA joinAttr COMMA joinAttr RPAREN;
 forClause : FOR var IN xq (COMMA var IN xq)* ;
 letClause : LET var ':=' xq (COMMA var ':=' xq)* ;
 whereClause : WHERE cond ;

@@ -94,7 +94,89 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	}
 
 
-	@Override public List<Node> visitXq_join(XQueryParser.Xq_joinContext ctx) { return visitChildren(ctx); }
+	@Override public List<Node> visitXq_join(XQueryParser.Xq_joinContext ctx) { 
+		List<Node> res = new ArrayList<>();
+		List<Node> xq1 = visit(ctx.joinClause().xq(1));
+		//System.out.println(ctx.joinClause().xq(1).getText());
+		//System.out.println(ctx.joinClause().xq(0).getText());
+		List<Node> xq0 = visit(ctx.joinClause().xq(0));
+		//no attr to join
+		if(ctx.joinClause().joinAttr(0).getText().equals("[]")) {
+			for(Node n0:xq0) {
+				for(Node n1:xq1) {
+					Node ntmp = n0.cloneNode(true);
+					for(int i=0;i<n1.getChildNodes().getLength();i++) {
+						ntmp.appendChild(n1.getChildNodes().item(i));
+					}
+					res.add(ntmp);
+				}
+			}
+		}
+		//has attr to join
+		else {
+			//build list of maps for each attr
+			List<Map<String,List<Node>>> attrMaps = new ArrayList<>();
+			for(int i=0;i<ctx.joinClause().joinAttr(0).NAME().size();i++)
+				attrMaps.add(new HashMap<>());
+			for(Node n:xq0) {
+				for(int i=0;i<ctx.joinClause().joinAttr(0).NAME().size();i++) {
+					String attrName = ctx.joinClause().joinAttr(0).NAME(i).getText();
+					
+					for(int j=0;j<n.getChildNodes().getLength();j++) {
+						Node child = n.getChildNodes().item(j);
+						if(child.getNodeType()==Node.ELEMENT_NODE&&child.getNodeName().equals(attrName)) {
+							String attrValue = child.getFirstChild().getTextContent();
+							if(!attrMaps.get(i).containsKey(attrValue)) {
+								attrMaps.get(i).put(attrValue, new ArrayList<>());
+							}
+							attrMaps.get(i).get(attrValue).add(n);
+							break;
+						}
+					}
+				}
+			}
+			
+			for(Node n:xq1) {
+				Set<Node> pastSet = new HashSet<>(xq0);
+				List<Node> curList = new ArrayList<>();
+				for(int i=0;i<ctx.joinClause().joinAttr(1).NAME().size();i++) {
+					String attrName = ctx.joinClause().joinAttr(1).NAME(i).getText();
+					String attrValue = "";
+					for(int j=0;j<n.getChildNodes().getLength();j++) {
+						Node child = n.getChildNodes().item(j);
+						if(child.getNodeType()==Node.ELEMENT_NODE&&child.getNodeName().equals(attrName)) {
+							attrValue = child.getFirstChild().getTextContent();;
+							break;
+						}
+					}
+					curList.clear();
+					if(attrMaps.get(i).containsKey(attrValue)) {
+						List<Node> tmpJoin = attrMaps.get(i).get(attrValue);
+						for(Node n0:tmpJoin) {
+							if(pastSet.contains(n0))
+								curList.add(n0);
+						}
+						//cur node cannot satisfy all conditions
+						if(curList.size()==0)
+							break;
+						pastSet = new HashSet<>(curList);
+					}
+					//cur node cannot join
+					else
+						break;
+				}
+				
+				for(Node n0:curList) {
+					Node ntmp = n0.cloneNode(true);
+					for(int i=0;i<n.getChildNodes().getLength();i++) {
+						ntmp.appendChild(n.getChildNodes().item(i).cloneNode(true));
+					}
+					res.add(ntmp);
+				}
+			}
+		}
+		return res;
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -128,7 +210,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 */
 	@Override public List<Node> visitXq_flwr(XQueryParser.Xq_flwrContext ctx) {
 		List<Node> res = new ArrayList<Node>();
+		//contextStack.push(new HashMap<String, List<Node>>(contextMap));
 		flwr(0, res, ctx);
+		//contextMap = contextStack.pop();
 		return res;
 	}
 	
@@ -156,6 +240,8 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 				if(!visit(ctx.whereClause()).isEmpty()) 
 					res.addAll(visit(ctx.returnClause()));
 			}
+			else
+				res.addAll(visit(ctx.returnClause()));
 			//contextMap = contextStack.pop();
 		}
 	}

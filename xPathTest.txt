@@ -1,11 +1,9 @@
-for $b in doc("j_caesar.xml")/book,
-$a in doc("j_caesar.xml")/entry,
-$tb in $b/title,
-$ta in $a/title
-where $tb eq $ta
-return
-<book-with-prices>
-{ $tb,
-<price-review>{ $a/price }</price-review>,
-<price>{ $b/price }</price> }
-</book-with-prices>
+for $a in document("j_caesar.xml")//ACT,
+    $b in document("j_caesar.xml")//ACT,
+    $sa in $a//SCENE,
+    $sb in $b//SCENE,
+    $spa in $sa//SPEAKER,
+    $spb in $sb//SPEAKER/text(),
+    $spc in $sb//SPEAKER
+where $spb="FLAVIUS" and $sa eq $sb and $spa eq $spc
+return <result>{ <title>{$sa/TITLE/text()}</title> }</result>
