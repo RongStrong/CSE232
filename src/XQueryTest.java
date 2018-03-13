@@ -25,10 +25,26 @@ public class XQueryTest {
 		XQueryParser parser = new XQueryParser(new CommonTokenStream(lexer));
 		ParseTree tree = parser.xq();
 		String rewriteRes = rewriter(tree);
+		boolean rewrite = true;
+		if(rewrite) {
+			try {
+
+                BufferedWriter out = new BufferedWriter(new FileWriter("xPathTest.txt"));
+                out.write(rewriteRes);
+                out.close();
+            }
+            catch (IOException e)
+            {
+                System.out.println("Output Exception");
+            }
+			lexer = new XQueryLexer(new ANTLRFileStream("xPathTest.txt"));
+			parser = new XQueryParser(new CommonTokenStream(lexer));
+			tree = parser.xq();
+		}
 		MyXQueryVisitor visitor = new MyXQueryVisitor();
 		List<Node> res = visitor.visit(tree);
 		writeFile(res, "output.xml");
-		System.out.print(res.size());
+		//System.out.print(res.size());
 	}
 	
 	private static String rewriter(ParseTree inputTree) {
@@ -97,7 +113,13 @@ public class XQueryTest {
 
 		String[] conds = whereClause.getChild(1).getText().split("and");
 		for(int i=0;i<conds.length;i++) {
-			String[] varPair = conds[i].split("eq");
+			String[] varPair = new String[2];
+			if(conds[i].contains("eq")) {
+				varPair = conds[i].split("eq");
+			}
+			else {
+				varPair = conds[i].split("=");
+			}
 			//has one non-var
 			if(!varToList.containsKey(varPair[0])||!varToList.containsKey(varPair[1])) {
 				nonJoinPairs.add(varPair);
@@ -116,7 +138,11 @@ public class XQueryTest {
 			for(int j=0;j<conds.length;j++) {
 				if(conds[j].equals("pass"))
 					continue;
-				String[] varPair = conds[j].split("eq");
+				String[] varPair = new String[2];
+				if(conds[j].contains("eq"))
+					varPair = conds[j].split("eq");
+				else
+					varPair = conds[j].split("=");
 				//vars in diff cat
 				if((leftVar.contains(varPair[0])&&rightVar.contains(varPair[1]))||(leftVar.contains(varPair[1])&&rightVar.contains(varPair[0]))) {
 					curJoinPairs.add(varPair);
@@ -209,13 +235,13 @@ public class XQueryTest {
 		if(whereFlag) {
 			res+= where+"\n";
 		}
-		String ret = "return <tuple>\n";
+		String ret = "return <tuple>\n{";
 		for(int i=0;i<varSeq.size();i++) {
 			ret+="<"+varSeq.get(i).substring(1, varSeq.get(i).length())+">";
 			ret+="{"+varSeq.get(i)+"}";
 			ret+="</"+varSeq.get(i).substring(1, varSeq.get(i).length())+">";;
 			if(i==varSeq.size()-1) {
-				ret+="\n";
+				ret+="}\n";
 			}
 			else
 				ret+=",\n";

@@ -96,17 +96,17 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 
 	@Override public List<Node> visitXq_join(XQueryParser.Xq_joinContext ctx) { 
 		List<Node> res = new ArrayList<>();
-		List<Node> xq1 = visit(ctx.joinClause().xq(1));
+		List<Node> xq0 = visit(ctx.joinClause().xq(0));
 		//System.out.println(ctx.joinClause().xq(1).getText());
 		//System.out.println(ctx.joinClause().xq(0).getText());
-		List<Node> xq0 = visit(ctx.joinClause().xq(0));
+		List<Node> xq1 = visit(ctx.joinClause().xq(1));
 		//no attr to join
 		if(ctx.joinClause().joinAttr(0).getText().equals("[]")) {
 			for(Node n0:xq0) {
 				for(Node n1:xq1) {
 					Node ntmp = n0.cloneNode(true);
 					for(int i=0;i<n1.getChildNodes().getLength();i++) {
-						ntmp.appendChild(n1.getChildNodes().item(i));
+						ntmp.appendChild(n1.getChildNodes().item(i).cloneNode(true));
 					}
 					res.add(ntmp);
 				}
@@ -135,9 +135,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 					}
 				}
 			}
-			
+			System.out.println("Map Built Done");
 			for(Node n:xq1) {
-				Set<Node> pastSet = new HashSet<>(xq0);
+				Set<Integer> pastSet = new HashSet<>();
 				List<Node> curList = new ArrayList<>();
 				for(int i=0;i<ctx.joinClause().joinAttr(1).NAME().size();i++) {
 					String attrName = ctx.joinClause().joinAttr(1).NAME(i).getText();
@@ -152,18 +152,28 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 					curList.clear();
 					if(attrMaps.get(i).containsKey(attrValue)) {
 						List<Node> tmpJoin = attrMaps.get(i).get(attrValue);
+						if(i==0) {
+							for(int j=0;j<tmpJoin.size();j++) {
+								pastSet.add(tmpJoin.get(j).hashCode());
+							}
+						}
+						
 						for(Node n0:tmpJoin) {
-							if(pastSet.contains(n0))
+							if(pastSet.contains(n0.hashCode()))
 								curList.add(n0);
 						}
 						//cur node cannot satisfy all conditions
 						if(curList.size()==0)
 							break;
-						pastSet = new HashSet<>(curList);
+						pastSet.clear();
+						for(int j=0;j<curList.size();j++) {
+							pastSet.add(curList.get(j).hashCode());
+						}
 					}
 					//cur node cannot join
-					else
+					else {
 						break;
+					}
 				}
 				
 				for(Node n0:curList) {
@@ -220,10 +230,10 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 		if(n < ctx.forClause().var().size()) {
 			
 			//contextStack.push(new HashMap<String, List<Node>>(contextMap));
-			int size = visit(ctx.forClause().xq(n)).size();
-			for(int i = 0; i < size; i++) {
+			List<Node> tmpres = visit(ctx.forClause().xq(n)); 
+			for(int i = 0; i < tmpres.size(); i++) {
 				List<Node> v = new ArrayList<Node>();
-				v.add(visit(ctx.forClause().xq(n)).get(i));
+				v.add(tmpres.get(i));
 				contextStack.push(new HashMap<String, List<Node>>(contextMap));
 				contextMap.put(ctx.forClause().var(n).getText(), v);
 				flwr(n + 1, res, ctx);
@@ -233,6 +243,7 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 			//contextMap = contextStack.pop();
 		}
 		else {
+
 			//contextStack.push(new HashMap<String, List<Node>>(contextMap));
 			if(ctx.letClause()!=null)
 				visit(ctx.letClause());
@@ -706,16 +717,20 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public List<Node> visitRp_at(XQueryParser.Rp_atContext ctx) {
+		
 		List<Node> res = new ArrayList<>();
 		for(Node n:scannedNodes) {
 			if(n.getNodeType()==Node.ELEMENT_NODE&&n.hasAttributes()) {
 				Element elem = (Element) n;
-				if(elem.hasAttribute(ctx.attName().toString()))
-					res.add(n);
+				if(elem.hasAttribute(ctx.attName().getText())) {
+					res.add(n.getAttributes().getNamedItem(ctx.attName().getText()));
+					//System.out.println(n.getAttributes().getNamedItem(ctx.attName().getText()).getNodeName());
+				}
 			}
 		}
 		scannedNodes = res;
 		return res;
+		
 	}
 	/**
 	 * {@inheritDoc}
@@ -736,7 +751,9 @@ public class MyXQueryVisitor extends XQueryBaseVisitor<List<Node>>{
 	@Override public List<Node> visitDoc(XQueryParser.DocContext ctx) { 
 		List<Node> res = new ArrayList<>();
 	    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
 	    //System.out.print(ctx.fileName().getText());
+
 	    File f = new File(ctx.fileName().getText());
 	    DocumentBuilder db = null;
 	    try {
